@@ -1,18 +1,21 @@
-import { database } from "../firebase";
+import { firebaseDB, database } from "../firebase";
 
 export const GET_POSTS = "GET_POSTS";
+export const GET_POST = "GET_POST";
 
 export const getPosts = () => (dispatch) => {
-  console.log("getPosts");
-
   database.on("value", (snap) => {
     const posts = [];
 
     snap.forEach((post) => {
-      const { title, body } = post.val();
+      const { title, body, imgURL, createdAt } = post.val();
       const serverKey = post.key;
 
-      posts.push({ title, body, serverKey });
+      posts.push({ serverKey, title, body, imgURL, createdAt });
+    });
+
+    posts.sort((a, b) => {
+      return b.createdAt - a.createdAt;
     });
 
     dispatch({
@@ -20,4 +23,22 @@ export const getPosts = () => (dispatch) => {
       payload: posts
     });
   });
+};
+
+export const getPost = (postId) => (dispatch) => {
+  firebaseDB
+    .ref("/posts/" + postId)
+    .once("value")
+    .then((snap) => {
+      dispatch({
+        type: GET_POST,
+        payload: {
+          serverKey: postId,
+          ...snap.val()
+        }
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };

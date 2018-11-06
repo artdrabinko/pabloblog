@@ -1,3 +1,22 @@
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.text-center {
+  height: 80vh;
+}
+
+.ql-toolbar.ql-snow {
+  border-radius: 5px 5px 0 0;
+}
+.ql-container.ql-snow {
+  border-radius: 0 0 5px 5px;
+  min-height: 250px;
+}
+
 #preloader {
   position: fixed;
   top: 0;

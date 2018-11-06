@@ -1,7 +1,8 @@
 import React from "react";
-import { Collapse, Navbar, NavbarToggler, NavbarBrand } from "reactstrap";
+import { Collapse, Navbar, NavbarToggler } from "reactstrap";
 import { Link } from "react-router-dom";
 import SignedInLinks from "./SignedInLinks";
+import SignOutLinks from "./SignOutLinks";
 import { connect } from "react-redux";
 
 class Header extends React.Component {
@@ -17,7 +18,7 @@ class Header extends React.Component {
 
   render() {
     const { user } = this.props;
-    const links = user ? <SignedInLinks /> : <div>Login Button</div>;
+    const links = user ? <SignedInLinks /> : <SignOutLinks />;
 
     return (
       <header>

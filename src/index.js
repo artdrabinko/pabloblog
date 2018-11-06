@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
@@ -9,8 +9,9 @@ import reducers from "./reducers/index";
 import LoadingComponent from "./containers/LoadingComponent";
 //import App from "./copmonents/App";
 
-import Header from "./copmonents/layout/Header";
+import Header from "./copmonents/header/Header";
 import MainPage from "./copmonents/mainPage/MainPage";
+import ViewPost from "./copmonents/view/ViewPost";
 import SignIn from "./copmonents/SignIn";
 import CreatePost from "./copmonents/CreatePost";
 import * as serviceWorker from "./serviceWorker";
@@ -31,6 +32,7 @@ ReactDOM.render(
           <Header />
 
           <Route exact path="/" component={MainPage} />
+          <Route path="/post/:id" component={ViewPost} />
           <Route path="/signin" component={SignIn} />
           <Route path="/new" component={CreatePost} />
         </div>

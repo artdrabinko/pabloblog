@@ -5,22 +5,26 @@ import { connect } from "react-redux";
 import { signOut } from "../../actions/userActions";
 
 const SignedInLinks = (props) => {
-  const signOut = (e) => {
-    e.preventDefault();
-    props.signOut();
+  const signOut = () => {
+    //eslint-disable-next-line
+    let result = confirm("Are you sure ?");
+
+    if (result) {
+      props.signOut();
+    }
   };
 
   return (
     <Nav className="ml-auto" navbar>
       <NavItem>
-        <Link className="nav-link" to="/new">
+        <Link className="btn btn-outline-success mr-3" to="/new">
           New post
         </Link>
       </NavItem>
       <NavItem>
-        <a href="#" onClick={signOut}>
-          sign out
-        </a>
+        <button className="btn btn-outline-danger" onClick={signOut}>
+          Sign out
+        </button>
       </NavItem>
     </Nav>
   );

@@ -1,15 +1,7 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { database } from "../firebase";
-import {
-  Jumbotron,
-  Alert,
-  Button,
-  Form,
-  FormGroup,
-  Label,
-  Input
-} from "reactstrap";
+import { Redirect } from "react-router-dom";
+import { auth } from "../firebase";
+import { Alert } from "reactstrap";
 import { connect } from "react-redux";
 //import { signIn } from "../actions/authActions";
 
@@ -25,41 +17,34 @@ export class SignIn extends Component {
     };
   }
 
-  signInWithGoogle = () => {
-    /*firebaseApp.auth().signInWithRedirect(provider);
-   firebaseApp
-      .auth()
-      .signInWithPopup(provider)
-      .then(function(result) {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const token = result.credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // ...
-      })
-      .catch(function(error) {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        const credential = error.credential;
-        // ...
-      });*/
-  };
+  componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("user yes", user);
+        const { displayName, photoURL, email, uid } = user;
 
-  /*signIn = () => {
+        //this.props.logUser({ displayName, photoURL, email });
+        //this.props.signIn({ uid });
+
+        //browserHistory.replace("/app");
+      } else {
+        console.log("error no", user);
+        //browserHistory.replace("/signin");
+      }
+    });
+  }
+
+  signIn = (e) => {
+    e.preventDefault();
     console.log(this.state);
     const { email, password } = this.state;
 
-    firebaseApp
-      .auth()
+    auth
       .signInWithEmailAndPassword(email, password)
       .then((data) => {
         console.log(data);
         const { uid } = data.user;
-        this.props.signIn({ uid });
+        //this.props.signIn({ uid });
         //browserHistory.replace("/app");
       })
       .catch((error) => {
@@ -71,30 +56,17 @@ export class SignIn extends Component {
           errorMessage: message
         });
       });
-  };*/
-
-  /*componentDidMount() {
-    firebaseApp.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log("user yes", user);
-        const { displayName, photoURL, email, uid } = user;
-
-        this.props.logUser({ displayName, photoURL, email });
-        this.props.signIn({ uid });
-
-        //browserHistory.replace("/app");
-      } else {
-        console.log("error no", user);
-        browserHistory.replace("/signin");
-      }
-    });
-  }*/
+  };
 
   render() {
+    const { user } = this.props;
+    if (user) {
+      return <Redirect to="/" />;
+    }
+
     return (
-      <Jumbotron>
-        <Form className="col-6 mt-5">
-          <h3>SignIn</h3>
+      <div className="d-flex align-items-center text-center">
+        <form onSubmit={this.signIn} className="form-signin">
           <Alert
             color="danger"
             isOpen={this.state.visible}
@@ -104,54 +76,51 @@ export class SignIn extends Component {
           >
             {this.state.errorMessage}
           </Alert>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Label for="exampleEmail" className="mr-sm-2">
-              Email
-            </Label>
-            <Input
-              type="email"
-              name="email"
-              id="exampleEmail"
-              placeholder="example@gmail.com"
-              onChange={(event) => {
-                this.setState({ email: event.target.value });
-              }}
-            />
-          </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-2">
-            <Label for="examplePassword" className="mr-sm-2">
-              Password
-            </Label>
-            <Input
-              type="password"
-              name="password"
-              id="examplePassword"
-              placeholder="Password"
-              onChange={(event) => {
-                this.setState({ password: event.target.value });
-              }}
-            />
-          </FormGroup>
-          <Button color="primary" onClick={this.signIn}>
-            SignIn
-          </Button>
-          <Button color="primary" onClick={this.signInWithGoogle}>
-            SignIn with Google
-          </Button>
-          <div className="mt-3">
-            <Link to="/signup">Sign up</Link>
-          </div>
-        </Form>
-      </Jumbotron>
+          <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
+          <label htmlFor="inputEmail" className="sr-only">
+            Email address
+          </label>
+          <input
+            type="email"
+            id="inputEmail"
+            className="form-control mb-3"
+            placeholder="Email address"
+            required=""
+            autoFocus=""
+            onChange={(event) => {
+              this.setState({ email: event.target.value });
+            }}
+          />
+          <label htmlFor="inputPassword" className="sr-only">
+            Password
+          </label>
+          <input
+            type="password"
+            id="inputPassword"
+            className="form-control mb-4"
+            placeholder="Password"
+            required=""
+            onChange={(event) => {
+              this.setState({ password: event.target.value });
+            }}
+          />
+
+          <button className="btn btn-lg btn-primary btn-block" type="submit">
+            Sign in
+          </button>
+          <p className="mt-5 mb-3 text-muted">© 2018-2019</p>
+        </form>
+      </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const { auth } = state;
+  const { auth, user } = state;
 
   return {
-    auth
+    auth,
+    user
   };
 }
 

@@ -10,11 +10,13 @@ export class ListPosts extends Component {
 
   renderPosts = () => {
     return this.props.posts.map((post) => {
-      return <Post key={post.serverKey} />;
+      return <Post key={post.serverKey} post={post} />;
     });
   };
 
   render() {
+    console.log(this.props);
+
     return (
       <div className="col-md-8">
         <h1 className="my-4">
