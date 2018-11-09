@@ -32,6 +32,10 @@ class ViewPost extends Component {
   }
 
   hendelRemovePost = (postId) => {
+    const result = window.confirm("Do you really want to delete the post?");
+
+    if (result === false) return;
+
     this.props.removePost(postId);
     this.setState({
       isDeleted: true
