@@ -14,6 +14,7 @@ import MainPage from "./copmonents/mainPage/MainPage";
 import ViewPost from "./copmonents/view/ViewPost";
 import SignIn from "./copmonents/SignIn";
 import CreatePost from "./copmonents/CreatePost";
+import EditPost from "./copmonents/EditPost";
 import * as serviceWorker from "./serviceWorker";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -32,9 +33,10 @@ ReactDOM.render(
           <Header />
 
           <Route exact path="/" component={MainPage} />
-          <Route path="/post/:id" component={ViewPost} />
+          <Route path="/posts/:id" component={ViewPost} />
           <Route path="/signin" component={SignIn} />
           <Route path="/new" component={CreatePost} />
+          <Route path="/edit/:id" component={EditPost} />
         </div>
       </Router>
     </LoadingComponent>

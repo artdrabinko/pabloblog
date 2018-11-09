@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import Post from "./Post";
 import { connect } from "react-redux";
-import { getPosts } from "../../actions/postActions";
+import { getPosts, setPostsFilter } from "../../actions/postActions";
 
 export class ListPosts extends Component {
   componentDidMount() {
-    this.props.getPosts();
+    if (!this.props.filter) {
+      this.props.getPosts();
+    }
   }
 
   renderPosts = () => {
@@ -18,10 +20,8 @@ export class ListPosts extends Component {
     console.log(this.props);
 
     return (
-      <div className="col-md-8">
-        <h1 className="my-4">
-          Posts <small>by Pavel Hrinevich</small>
-        </h1>
+      <div className="col-md-8 mt-3">
+        <h3>{this.props.posts.length ? null : "No posts .("}</h3>
         {this.renderPosts()}
       </div>
     );
@@ -30,11 +30,12 @@ export class ListPosts extends Component {
 
 function mapStateToProps(state) {
   return {
-    posts: state.posts
+    posts: state.posts,
+    filter: state.filter
   };
 }
 
 export default connect(
   mapStateToProps,
-  { getPosts }
+  { getPosts, setPostsFilter }
 )(ListPosts);

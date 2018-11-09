@@ -3,7 +3,6 @@ import { Redirect } from "react-router-dom";
 import { auth } from "../firebase";
 import { Alert } from "reactstrap";
 import { connect } from "react-redux";
-//import { signIn } from "../actions/authActions";
 
 export class SignIn extends Component {
   constructor(props) {
@@ -17,23 +16,6 @@ export class SignIn extends Component {
     };
   }
 
-  componentDidMount() {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log("user yes", user);
-        const { displayName, photoURL, email, uid } = user;
-
-        //this.props.logUser({ displayName, photoURL, email });
-        //this.props.signIn({ uid });
-
-        //browserHistory.replace("/app");
-      } else {
-        console.log("error no", user);
-        //browserHistory.replace("/signin");
-      }
-    });
-  }
-
   signIn = (e) => {
     e.preventDefault();
     console.log(this.state);
@@ -43,14 +25,9 @@ export class SignIn extends Component {
       .signInWithEmailAndPassword(email, password)
       .then((data) => {
         console.log(data);
-        const { uid } = data.user;
-        //this.props.signIn({ uid });
-        //browserHistory.replace("/app");
       })
       .catch((error) => {
-        const { code, message } = error;
-        console.log(code, message);
-
+        const { message } = error;
         this.setState({
           visible: true,
           errorMessage: message
@@ -116,10 +93,9 @@ export class SignIn extends Component {
 }
 
 function mapStateToProps(state) {
-  const { auth, user } = state;
+  const { user } = state;
 
   return {
-    auth,
     user
   };
 }

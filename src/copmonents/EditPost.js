@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import { database, firebaseStorage, storageRef } from "../firebase";
+import { firebaseDB, firebaseStorage, storageRef } from "../firebase";
+import { getPost } from "../actions/postActions";
 import { connect } from "react-redux";
 import {
   Button,
@@ -17,7 +18,7 @@ import {
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-class CreatePost extends Component {
+class EditPost extends Component {
   state = {
     title: "",
     description: "",
@@ -31,33 +32,27 @@ class CreatePost extends Component {
 
   hendlerSubmitForm = (e) => {
     e.preventDefault();
-    const { title, description, body, imgURL } = this.state;
-    const createdAt = +new Date();
-    console.log(createdAt);
+    const { title, body, description, imgURL } = this.state;
+    const updatedAt = +new Date();
 
-    const post = { title, description, body, imgURL, createdAt };
+    const { serverKey } = this.props.editPost;
+    const post = { title, description, body, imgURL, updatedAt };
+    const self = this;
 
-    database
-      .push(post)
-      .then((res) => {
-        console.log(res);
-        this.setState({
-          isOpenAlert: true,
-          title: "",
-          description: "",
-          body: "",
-          imgURL: "",
-          file: null,
-          isLoading: false,
-          loadProgress: 0
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        this.setState({
+    firebaseDB.ref("posts/" + serverKey).update(post, function(error) {
+      if (error) {
+        // The write failed...
+        alert(error);
+        self.setState({
           isOpenAlert: true
         });
-      });
+      } else {
+        // Data saved successfully!
+        self.setState({
+          isOpenAlert: true
+        });
+      }
+    });
   };
 
   hendlerInputTitle = (e) => {
@@ -162,10 +157,35 @@ class CreatePost extends Component {
     });
   };
 
+  componentDidMount() {
+    if (this.props.editPost) {
+      const { title, description, body, imgURL } = this.props.editPost;
+
+      this.setState({
+        title,
+        description,
+        body,
+        imgURL
+      });
+    } else {
+      const { match } = this.props;
+      const postId = match.params.id;
+      this.props.getPost(postId);
+    }
+  }
+
   render() {
-    const { user } = this.props;
+    const { user, editPost } = this.props;
     if (!user) {
       return <Redirect to="/" />;
+    }
+
+    if (!editPost) {
+      return (
+        <div className="container pt-3">
+          <h3>Loading ...</h3>
+        </div>
+      );
     }
 
     return (
@@ -178,7 +198,7 @@ class CreatePost extends Component {
                 color="success"
                 toggle={this.onDismiss}
               >
-                Post successfully created!
+                Post successfully updated!
               </Alert>
 
               <FormGroup>
@@ -209,8 +229,8 @@ class CreatePost extends Component {
               <FormGroup>
                 <Label>Body</Label>
                 <ReactQuill
-                  modules={CreatePost.modules}
-                  formats={CreatePost.formats}
+                  modules={EditPost.modules}
+                  formats={EditPost.formats}
                   placeholder="Body"
                   value={this.state.body}
                   onChange={(value) => {
@@ -245,7 +265,7 @@ class CreatePost extends Component {
               </FormGroup>
 
               {this.state.title && this.state.body ? (
-                <Button color="primary">Create post</Button>
+                <Button color="primary">Update post</Button>
               ) : null}
             </Col>
           </Row>
@@ -255,9 +275,9 @@ class CreatePost extends Component {
   }
 }
 
-CreatePost.modules = {
+EditPost.modules = {
   toolbar: [
-    [{ header: "2" }, { header: "3" }, { header: "4" }, { font: [] }],
+    [{ header: "1" }, { header: "2" }, { header: "3" }, { font: [] }],
     [{ size: [] }],
     ["bold", "italic", "underline", "strike", "blockquote"],
     [{ list: "ordered" }, { list: "bullet" }],
@@ -267,7 +287,7 @@ CreatePost.modules = {
   ]
 };
 
-CreatePost.formats = [
+EditPost.formats = [
   "header",
   "font",
   "size",
@@ -283,12 +303,14 @@ CreatePost.formats = [
 ];
 
 function mapStateToProps(state) {
+  const { user, editPost } = state;
   return {
-    user: state.user
+    user,
+    editPost
   };
 }
 
 export default connect(
   mapStateToProps,
-  {}
-)(CreatePost);
+  { getPost }
+)(EditPost);

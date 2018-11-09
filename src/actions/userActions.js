@@ -16,6 +16,9 @@ export const getUser = () => {
     });
 
     auth.onAuthStateChanged((user) => {
+      console.log({ user });
+      console.log("");
+
       dispatch({
         type: LOGIN_SUCCESS,
         payload: user

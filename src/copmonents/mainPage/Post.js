@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import renderHTML from "react-render-html";
+import { setPostsFilter } from "../../actions/postActions";
+import { connect } from "react-redux";
 
 const Post = (props) => {
   console.log(props);
@@ -18,8 +19,8 @@ const Post = (props) => {
       />
       <div className="card-body">
         <h2 className="card-title">{props.post.title}</h2>
-        <p className="card-text">{renderHTML(props.post.body)}</p>
-        <Link to={`/post/${props.post.serverKey}`} className="btn btn-primary">
+        <p>{props.post.description}</p>
+        <Link to={`/posts/${props.post.serverKey}`} className="btn btn-primary">
           Read More →
         </Link>
       </div>
@@ -28,4 +29,7 @@ const Post = (props) => {
   );
 };
 
-export default Post;
+export default connect(
+  null,
+  { setPostsFilter }
+)(Post);
